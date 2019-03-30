@@ -71,9 +71,8 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
     if plotting not in ('on', 'off'):
         raise ValueError("if supplied, plotting must be either 'on' or 'off'")
     if plotting == 'on':
-        raise RuntimeError('plotting does not work, sorry')
         plt.figure(figsize=(8,6))
-        fig = plt.subplot(111)
+        ax = plt.subplot(111)
 
     Is = 0
     VT = 0
@@ -83,13 +82,13 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
     if WIN == 0:
         raise RuntimeError('could not find a weak-inversion region')
     elif plotting == 'on':
-        fig.semilogy(Vg, Isat)
-        # temp = fig.ylimits()
-        fig.semilogy([Vg, array(Vg[WIfirst : WIlast + 1]), Vg], [Isat, array(Isat[WIfirst : WIlast + 1]), exp(WIm * Vg + WIb)], ['b.', 'r.', 'k-'])
-        # fig.ylimits(temp)
-        fig.xlabel('VG (V)')
-        fig.ylabel('Isat (A)')
-        fig.ylabel('Weak-Inversion Fit', side = 'right')
+        ax.semilogy(Vg, Isat)
+        for i in range(3):
+          ax.semilogy([Vg, array(Vg[WIfirst : WIlast + 1]), Vg][i], [Isat, array(Isat[WIfirst : WIlast + 1]), exp(WIm * Vg + WIb)][i], ['b.', 'r.', 'k-'][i])
+        plt.title("Weak Inversion")
+        plt.xlabel('VG (V)')
+        plt.ylabel('Isat (A)')
+        plt.show()
         input()
     if min(abs(array(Isat[WIfirst : WIlast + 1]))) > 1e-6:
         raise ValueError('identified a candidate weak-inversion region, but all current levels exceed typical weak-inversion currents')
@@ -101,13 +100,13 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
     if SIN == 0:
         raise RuntimeError('could not find a strong-inversion region')
     elif plotting == 'on':
-        fig.plot(Vg, sqrt(abs(Isat)))
-        temp = fig.ylimits()
-        fig.plot([Vg, array(Vg[SIfirst : SIlast+1]), Vg], [sqrt(abs(Isat)), sqrt(array(Isat[SIfirst : SIlast + 1])), SIm * Vg + SIb], ['b.', 'r.', 'k-'])
-        fig.ylimits(temp)
-        fig.xlabel('VG (V)')
-        fig.ylabel('sqrt(Isat) (sqrt(A))')
-        fig.ylabel('Strong-Inversion Fit', side = 'right')
+        ax.plot(Vg, sqrt(abs(Isat)))
+        for i in range(3):
+          ax.plot([Vg, array(Vg[SIfirst : SIlast+1]), Vg][i], [sqrt(abs(Isat)), sqrt(array(Isat[SIfirst : SIlast + 1])), SIm * Vg + SIb][i], ['b.', 'r.', 'k-'][i])
+        plt.title("Strong Inversion")
+        plt.xlabel('VG (V)')
+        plt.ylabel('sqrt(Isat) (sqrt(A))')
+        plt.show()
         input()
     if max(abs(array(Isat[SIfirst : SIlast + 1]))) < 0.1e-6:
         raise ValueError('identified a candidate strong-inversion region, but all current levels are lower than typical strong-inversion currents')
@@ -156,10 +155,12 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
             f2 = std(temp) / mean(temp)
             if plotting == 'on':
                 [EKVfirst, EKVlast, m, b, N] = linefit(array(Vg[first : last + 1]), log(exp(sqrt(array(Isat[first : last + 1]) / x2)) - 1), epsilon)
-                fig.plot([array(Vg[first:last+1]), array(Vg[first:last+1])], [log(exp(sqrt(array(Isat[first : last + 1]) / x2)) - 1), m * array(Vg[first : last + 1]) + b], ['b.',  'k-'])
-                fig.xlabel('VG (V)')
-                fig.ylabel('log(exp(sqrt(Isat/Is))-1)')
-                fig.ylabel('Optimizing Is = {0}A'.format(num2str(x2, 3)), side = 'right')
+                for i in range(2):
+                  ax.plot([array(Vg[first:last+1]), array(Vg[first:last+1])][i], [log(exp(sqrt(array(Isat[first : last + 1]) / x2)) - 1), m * array(Vg[first : last + 1]) + b][i], ['b.',  'k-'][i])
+                plt.xlabel('VG (V)')
+                plt.ylabel('log(exp(sqrt(Isat/Is))-1)')
+                plt.title('Optimizing Is = {0}A'.format(num2str(x2, 3)))
+                plt.show()
                 input()
         else:
             x3 = x2
@@ -170,10 +171,12 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
             f1 = std(temp) / mean(temp)
             if plotting == 'on':
                 [EKVfirst, EKVlast, m, b, N] = linefit(array(Vg[first : last + 1]), log(exp(sqrt(array(Isat[first : last + 1]) / x1)) - 1), epsilon)
-                fig.plot([array(Vg[first : last + 1]), array(Vg[first : last + 1])], [log(exp(sqrt(array(Isat[first : last + 1]) / x1)) - 1), m * array(Vg[first : last + 1]) + b], ['b.',  'k-'])
-                fig.xlabel('VG (V)')
-                fig.ylabel('log(exp(sqrt(Isat/Is))-1)')
-                fig.ylabel('Optimizing Is = {0}A'.format(num2str(x1, 3)), side = 'right')
+                for i in range(2):
+                  ax.plot([array(Vg[first : last + 1]), array(Vg[first : last + 1])][i], [log(exp(sqrt(array(Isat[first : last + 1]) / x1)) - 1), m * array(Vg[first : last + 1]) + b][i], ['b.',  'k-'][i])
+                plt.xlabel('VG (V)')
+                plt.ylabel('log(exp(sqrt(Isat/Is))-1)')
+                plt.title('Optimizing Is = {0}A'.format(num2str(x1, 3)))
+                plt.show()
                 input()
 
     Is = x1 if f1 < f2 else x2
@@ -182,21 +185,21 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
     VT = -b / m
     kappa = 2 * m *0.0258
     if plotting == 'on':
-        fig.semilogy(Vg, Isat)
-        temp = fig.ylimits()
-        fig.semilogy([Vg, array(Vg[first : last + 1]), Vg], [Isat, array(Isat[first : last + 1]), Is * (log(1 + exp(kappa * (Vg - VT) / (2 * 0.0258)))) ** 2], ['b.', 'r.',  'k-'])
-        fig.ylimits(temp)
-        fig.xlabel('VG (V)')
-        fig.ylabel('Isat (A)')
-        fig.ylabel('EKV Fit: Is = {0}A, VT = {1!s}V, kappa = {2!s}'.format(num2str(Is, 3), round(VT, 3), round(kappa, 3)), side = 'right')
+        ax.semilogy(Vg, Isat)
+        for i in range(3):
+          ax.semilogy([Vg, array(Vg[first : last + 1]), Vg][i], [Isat, array(Isat[first : last + 1]), Is * (log(1 + exp(kappa * (Vg - VT) / (2 * 0.0258)))) ** 2][i], ['b.', 'r.',  'k-'][i])
+        plt.xlabel('VG (V)')
+        plt.ylabel('Isat (A)')
+        plt.title('EKV Fit: Is = {0}A, VT = {1!s}V, kappa = {2!s}'.format(num2str(Is, 3), round(VT, 3), round(kappa, 3)))
+        plt.show()
         input()
-        fig.plot(Vg, sqrt(abs(Isat)))
-        temp = fig.ylimits()
-        fig.plot([Vg, array(Vg[first : last + 1]), Vg], [sqrt(abs(Isat)), sqrt(array(Isat[first : last + 1])), sqrt(Is * (log(1 + exp(kappa * (Vg - VT) / (2 * 0.0258)))) ** 2)], ['b.', 'r.', 'k-'])
-        fig.ylimits(temp)
-        fig.xlabel('VG (V)')
-        fig.ylabel('sqrt(Isat) (sqrt(A))')
-        fig.ylabel('EKV Fit: Is = {0!s}A, VT = {1!s}V, kappa = {2!s}'.format(num2str(Is, 3), round(VT, 3), round(kappa, 3)), side = 'right')
+        ax.plot(Vg, sqrt(abs(Isat)))
+        for i in range(3):
+          ax.plot([Vg, array(Vg[first : last + 1]), Vg][i], [sqrt(abs(Isat)), sqrt(array(Isat[first : last + 1])), sqrt(Is * (log(1 + exp(kappa * (Vg - VT) / (2 * 0.0258)))) ** 2)][i], ['b.', 'r.', 'k-'][i])
+        plt.xlabel('VG (V)')
+        plt.ylabel('sqrt(Isat) (sqrt(A))')
+        plt.title('EKV Fit: Is = {0!s}A, VT = {1!s}V, kappa = {2!s}'.format(num2str(Is, 3), round(VT, 3), round(kappa, 3)))
+        plt.show()
         input()
     return [Is, VT, kappa]
 

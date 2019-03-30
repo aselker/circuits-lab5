@@ -23,7 +23,7 @@ def str2num(s):
 #        raise TypeError('s must be a string')
     multipliers = {'k': 1e3, 'M': 1e6, 'G': 1e9, 'T': 1e12, 'P': 1e15, 'E': 1e18, 'Z': 1e21, 'Y': 1e24, 
                    'y': 1e-24, 'z': 1e-21, 'a': 1e-18, 'f': 1e-15, 'p': 1e-12, 'n': 1e-9, 'u': 1e-6, 'm': 1e-3}
-    if s[-1] in multipliers.keys():
+    if s[-1] in list(multipliers.keys()):
         return float(s[0 : -1]) * multipliers[s[-1]]
     else:
         return float(s)
@@ -86,11 +86,11 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
         fig.xlabel('VG (V)')
         fig.ylabel('Isat (A)')
         fig.ylabel('Weak-Inversion Fit', side = 'right')
-        raw_input()
+        input()
     if min(abs(array(Isat[WIfirst : WIlast + 1]))) > 1e-6:
         raise ValueError('identified a candidate weak-inversion region, but all current levels exceed typical weak-inversion currents')
     if max(abs(array(Isat[WIfirst : WIlast + 1]))) > 1e-6:
-        print 'ValueWarning: identified a candidate weak-inversion region, but some current levels exceed typical weak-inversion currents'
+        print('ValueWarning: identified a candidate weak-inversion region, but some current levels exceed typical weak-inversion currents')
 #        warnings.warn('ValueWarning', 'identified a candidate weak-inversion region, but some current levels exceed typical weak-inversion currents')
 
     [SIfirst, SIlast, SIm, SIb, SIN] = linefit(Vg, sqrt(Isat), epsilon)
@@ -104,11 +104,11 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
         fig.xlabel('VG (V)')
         fig.ylabel('sqrt(Isat) (sqrt(A))')
         fig.ylabel('Strong-Inversion Fit', side = 'right')
-        raw_input()
+        input()
     if max(abs(array(Isat[SIfirst : SIlast + 1]))) < 0.1e-6:
         raise ValueError('identified a candidate strong-inversion region, but all current levels are lower than typical strong-inversion currents')
     if min(abs(array(Isat[SIfirst : SIlast + 1]))) < 0.1e-6:
-        print 'ValueWarning: identified a candidate strong-inversion region, but some current levels are lower than typical strong-inversion currents'
+        print('ValueWarning: identified a candidate strong-inversion region, but some current levels are lower than typical strong-inversion currents')
 #        warnings.warn('ValueWarning', 'identified a candidate strong-inversion region, but some current levels are lower than typical strong-inversion currents')
 
     if SIfirst > WIlast:
@@ -156,7 +156,7 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
                 fig.xlabel('VG (V)')
                 fig.ylabel('log(exp(sqrt(Isat/Is))-1)')
                 fig.ylabel('Optimizing Is = {0}A'.format(num2str(x2, 3)), side = 'right')
-                raw_input()
+                input()
         else:
             x3 = x2
             x2 = x1
@@ -170,7 +170,7 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
                 fig.xlabel('VG (V)')
                 fig.ylabel('log(exp(sqrt(Isat/Is))-1)')
                 fig.ylabel('Optimizing Is = {0}A'.format(num2str(x1, 3)), side = 'right')
-                raw_input()
+                input()
 
     Is = x1 if f1 < f2 else x2
 
@@ -185,7 +185,7 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
         fig.xlabel('VG (V)')
         fig.ylabel('Isat (A)')
         fig.ylabel('EKV Fit: Is = {0}A, VT = {1!s}V, kappa = {2!s}'.format(num2str(Is, 3), round(VT, 3), round(kappa, 3)), side = 'right')
-        raw_input()
+        input()
         fig.plot(Vg, sqrt(abs(Isat)))
         temp = fig.ylimits()
         fig.plot([Vg, array(Vg[first : last + 1]), Vg], [sqrt(abs(Isat)), sqrt(array(Isat[first : last + 1])), sqrt(Is * (log(1 + exp(kappa * (Vg - VT) / (2 * 0.0258)))) ** 2)], ['b.', 'r.', 'k-'])
@@ -193,6 +193,6 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
         fig.xlabel('VG (V)')
         fig.ylabel('sqrt(Isat) (sqrt(A))')
         fig.ylabel('EKV Fit: Is = {0!s}A, VT = {1!s}V, kappa = {2!s}'.format(num2str(Is, 3), round(VT, 3), round(kappa, 3)), side = 'right')
-        raw_input()
+        input()
     return [Is, VT, kappa]
 

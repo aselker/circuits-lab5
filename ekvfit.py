@@ -1,4 +1,5 @@
 import math
+from linefit import linefit
 import matplotlib.pyplot as plt
 from numpy import *
 

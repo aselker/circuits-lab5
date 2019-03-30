@@ -71,7 +71,9 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
     if plotting not in ('on', 'off'):
         raise ValueError("if supplied, plotting must be either 'on' or 'off'")
     if plotting == 'on':
-        fig = plt.figure(figsize=(8,6))
+        raise RuntimeError('plotting does not work, sorry')
+        plt.figure(figsize=(8,6))
+        fig = plt.subplot(111)
 
     Is = 0
     VT = 0
@@ -82,9 +84,9 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
         raise RuntimeError('could not find a weak-inversion region')
     elif plotting == 'on':
         fig.semilogy(Vg, Isat)
-        temp = fig.ylimits()
+        # temp = fig.ylimits()
         fig.semilogy([Vg, array(Vg[WIfirst : WIlast + 1]), Vg], [Isat, array(Isat[WIfirst : WIlast + 1]), exp(WIm * Vg + WIb)], ['b.', 'r.', 'k-'])
-        fig.ylimits(temp)
+        # fig.ylimits(temp)
         fig.xlabel('VG (V)')
         fig.ylabel('Isat (A)')
         fig.ylabel('Weak-Inversion Fit', side = 'right')

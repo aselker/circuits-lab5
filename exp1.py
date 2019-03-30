@@ -61,6 +61,21 @@ vg_p, isat_p = clip(vg_p, isat_p, (-np.inf, 4.6), (np.finfo(float).eps, np.inf))
 params_p = fit(vg_p, isat_p, ekv_p, [7.2197482429849523e-08, -0.50917435504354447, 3.3782458038598859])
 
 
+# Calculate incremental transconductance gains
+gm_en = np.diff(vg_n) / np.diff(isat_n)
+gm_vn = np.arange(min(vg_n), max(vg_n), (max(vg_n) - min(vg_n))/len(vg_n))
+gm_tn_both = [[],[]]
+gm_tn_both[0] = [ekv_n(v, params_n) for v in gm_vn][:-1]
+gm_tn_both[1] = np.diff(gm_vn) / np.diff([ekv_n(v, params_n) for v in gm_vn])
+
+gm_ep = np.diff(vg_p) / np.diff(isat_p)
+gm_vp = np.arange(min(vg_p), max(vg_p), (max(vg_p) - min(vg_p))/len(vg_p))
+gm_tp_both = [[],[]]
+gm_tp_both[0] = [ekv_p(v, params_p) for v in gm_vp][:-1]
+gm_tp_both[1] = np.diff(gm_vp) / np.diff([ekv_p(v, params_p) for v in gm_vp])
+
+
+# Plot things
 fig = plt.figure(figsize=(8,6))
 ax = plt.subplot(111)
 
@@ -69,9 +84,34 @@ ax.semilogy(vg_n, ekv_n(vg_n, params_n), 'g-', label="N-type current (theoretica
 ax.semilogy(vg_p, isat_p, 'r.', label="P-type current (experimental)")
 ax.semilogy(vg_p, ekv_p(vg_p, params_p), 'y-', label="P-type current (theoretical, Is = %g, Vt0 = %g, κ = %g)" %  (params_p[0], params_p[1], params_p[2]))
 
-plt.title("N- and P-type current-voltage characteristics")
+plt.title("N- and P-type saturation current-voltage characteristics")
 plt.xlabel("Gate voltage (v)")
 plt.ylabel("Current (A)")
 plt.grid(True)
 ax.legend()
 plt.savefig("exp1-vi-semilog.pdf")
+plt.cla()
+
+ax.loglog(isat_n[:-1], gm_en, 'b.', label="Inc. transconductance gain (experimental)")
+ax.loglog(gm_tn_both[0], gm_tn_both[1], 'g-', label="Inc. transconductance gain (theoretical)")
+
+plt.title("N-type incremental transconductance gain")
+plt.xlabel("Current (A)")
+plt.ylabel("Gm (℧)")
+plt.grid(True)
+ax.legend()
+plt.savefig("exp1-gm-n.pdf")
+plt.cla()
+
+ax.loglog(isat_p[:-1], -gm_ep, 'r.', label="Inc. transconductance gain (experimental)")
+ax.loglog(gm_tp_both[0], -gm_tp_both[1], 'y-', label="Inc. transconductance gain (theoretical)")
+
+plt.title("P-type incremental transconductance gain")
+plt.xlabel("Current (A)")
+plt.ylabel("-Gm (℧)")
+plt.grid(True)
+ax.legend()
+plt.savefig("exp1-gm-p.pdf")
+plt.cla()
+
+

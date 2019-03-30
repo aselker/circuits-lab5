@@ -1,4 +1,5 @@
-import tkplot, math
+import math
+import matplotlib.pyplot as plt
 from numpy import *
 
 def num2str(x, n = 0):
@@ -69,7 +70,7 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
     if plotting not in ('on', 'off'):
         raise ValueError("if supplied, plotting must be either 'on' or 'off'")
     if plotting == 'on':
-        fig = tkplot.tkplot()
+        fig = plt.figure(figsize=(8,6))
 
     Is = 0
     VT = 0

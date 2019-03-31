@@ -3,7 +3,7 @@
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import minimize
+from itertools import groupby
 
 def clip(xs, ys, xbounds, ybounds):
   pairs = [(x, y) for (x, y) in zip(xs, ys) if (xbounds[0] <= x) and (x <= xbounds[1]) and (ybounds[0] <= y) and (y <= ybounds[1])]
@@ -34,7 +34,7 @@ def linterp(xs, ys, target):
     
 
 # for each curve:
-# Get saturation voltage, somehow
+# Get saturation voltage
 # Make linear fit for sat region to find early voltage and isat
 # Make linear fit for ohmic region
 # combine slopes to get intrinsic gain
@@ -54,16 +54,24 @@ for i in range(3):
       i_n[i] += [(1 if i==0 else -1) * float(row[1])] 
 
 vg_n = np.array([0.46, 0.56, 5])
-# a = np.power(np.log(1 + np.exp(kappa*(vg_n-vt0)/(2*ut))), 2) / np.power(np.log(1 + np.exp(
 a = 100
 ut = 25.7 / 1000 # roughly, at room temperature
 Vt0 = 0.551129 # from exp1
 kappa = 0.700688 # from exp1
-vdsat_n = kappa*(vg_n-Vt0) - 2 * ut * np.log(np.power(1+np.exp(kappa*(vg_n-Vt0)/(2*ut)), 1/np.sqrt(a)) - 1)
-print(vdsat_n)
+def vdsat_nf(vg): return kappa*(vg-Vt0) - 2 * ut * np.log(np.power(1+np.exp(kappa*(vg-Vt0)/(2*ut)), 1/np.sqrt(a)) - 1)
+vdsat_n = vdsat_nf(vg_n)
+print("Saturation voltages:", vdsat_n)
+isat_n = [linterp(vd, i, vdsat) for vd, i, vdsat in zip(vd_n, i_n, vdsat_n)]
+print("Saturation currents:", isat_n)
 
+# Split the data into ohmic and saturation regions
+grouped = [ [list(g) for _, g in groupby(zip(vd, i), lambda pair: pair[0] >= vdsat)] for vd, i, vdsat in zip(vd_n, i_n, vdsat_n)]
+vg_on = [grouped[i][0] for i in range(3)]
+i_on = [grouped[i][0] for i in range(3)]
+vg_sn = [grouped[i][1] for i in range(3)]
+i_sn = [grouped[i][1] for i in range(3)]
 
-
+# Linear fit the saturation region, to find Early voltage and sat current
 
 
 # Plot n-type characteristics
@@ -72,6 +80,7 @@ ax = plt.subplot(111)
 
 for i in range(3):
   ax.semilogy(vd_n[i], i_n[i], ['r.', 'g.', 'b.'][i], label="Gate voltage = %s" % (["0.46 v", "0.56 v", "5 v"][i]))
+ax.semilogy(vdsat_n, isat_n, 'ko', label="Saturation points")
 
 plt.title("N-type drain characteristics")
 plt.xlabel("Drain voltage (v)")

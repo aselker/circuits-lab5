@@ -3,7 +3,6 @@
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
-from ekvfit import ekvfit
 from scipy.optimize import minimize
 
 def clip(xs, ys, xbounds, ybounds):

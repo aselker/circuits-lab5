@@ -89,7 +89,6 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
         plt.xlabel('VG (V)')
         plt.ylabel('Isat (A)')
         plt.show()
-        input()
     if min(abs(array(Isat[WIfirst : WIlast + 1]))) > 1e-6:
         raise ValueError('identified a candidate weak-inversion region, but all current levels exceed typical weak-inversion currents')
     if max(abs(array(Isat[WIfirst : WIlast + 1]))) > 1e-6:
@@ -107,7 +106,6 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
         plt.xlabel('VG (V)')
         plt.ylabel('sqrt(Isat) (sqrt(A))')
         plt.show()
-        input()
     if max(abs(array(Isat[SIfirst : SIlast + 1]))) < 0.1e-6:
         raise ValueError('identified a candidate strong-inversion region, but all current levels are lower than typical strong-inversion currents')
     if min(abs(array(Isat[SIfirst : SIlast + 1]))) < 0.1e-6:
@@ -161,7 +159,6 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
                 plt.ylabel('log(exp(sqrt(Isat/Is))-1)')
                 plt.title('Optimizing Is = {0}A'.format(num2str(x2, 3)))
                 plt.show()
-                input()
         else:
             x3 = x2
             x2 = x1
@@ -177,7 +174,6 @@ def ekvfit(Vg, Isat, epsilon = 0.001, **kwargs):
                 plt.ylabel('log(exp(sqrt(Isat/Is))-1)')
                 plt.title('Optimizing Is = {0}A'.format(num2str(x1, 3)))
                 plt.show()
-                input()
 
     Is = x1 if f1 < f2 else x2
 

@@ -71,14 +71,26 @@ i_on = [[x[1] for x in y] for y in [grouped[i][0] for i in range(3)]]
 vd_sn = [[x[0] for x in y] for y in [grouped[i][1] for i in range(3)]]
 i_sn = [[x[1] for x in y] for y in [grouped[i][1] for i in range(3)]]
 
-# Linear fit the saturation region, to find Early voltage
+# Linear fit the saturation region, to find Early voltage and r0
 early_n = []
+r0_n = []
 for vd, i in zip(vd_sn, i_sn):
   fit = np.polyfit(vd, i, 1)
-  print(fit)
   early_n += [(fit[1] / fit[0])]
+  r0_n += [1/fit[1]]
 
-print("Early voltages:", early_n)
+# Linear fit part of the ohmic region, to find gs
+gs_n = []
+for vd, i in zip(vd_on, i_on):
+  num_to_use = len(vd)//3
+  vd = vd[:num_to_use]
+  i = i[:num_to_use]
+  fit = np.polyfit(vd, i, 1)
+  gs_n += [fit[0]]
+
+# Find intrinsic gains
+ig_n = np.array(r0_n) * np.array(gs_n)
+
 
 # Plot n-type characteristics
 fig = plt.figure(figsize=(8,6))

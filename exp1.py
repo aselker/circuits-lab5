@@ -25,7 +25,7 @@ def ekv_n(vg, params):
   return Is * np.power(np.log(1 + np.exp(kappa*(vg - Vt)/(2*0.0258))), 2)
 
 def ekv_p(vg, params):
-  return ekv_n(5-np.array(vg), [params[0], -params[1], params[2]])
+  return ekv_n(5-np.array(vg), params)
 
 # Process n-type data
 vg_n = []
@@ -79,12 +79,12 @@ fig = plt.figure(figsize=(8,6))
 ax = plt.subplot(111)
 
 ax.semilogy(vg_n, isat_n, 'b.', label="N-type current (experimental)")
-ax.semilogy(vg_n, ekv_n(vg_n, params_n), 'g-', label="N-type current (theoretical, Is = %g, Vt0 = %g, κ = %g)" %  (params_n[0], params_n[1], params_n[2]))
+ax.semilogy(vg_n, ekv_n(vg_n, params_n), 'g-', label="N-type current (theoretical, Is = %g A, Vt0 = %g V, κ = %g)" %  (params_n[0], params_n[1], params_n[2]))
 ax.semilogy(vg_p, isat_p, 'r.', label="P-type current (experimental)")
-ax.semilogy(vg_p, ekv_p(vg_p, params_p), 'y-', label="P-type current (theoretical, Is = %g, Vt0 = %g, κ = %g)" %  (params_p[0], params_p[1], params_p[2]))
+ax.semilogy(vg_p, ekv_p(vg_p, params_p), 'y-', label="P-type current (theoretical, Is = %g A, Vt0 = %g V, κ = %g)" %  (params_p[0], params_p[1], params_p[2]))
 
 plt.title("N- and P-type saturation current-voltage characteristics")
-plt.xlabel("Gate voltage (v)")
+plt.xlabel("Gate voltage (V)")
 plt.ylabel("Current (A)")
 plt.grid(True)
 ax.legend()

@@ -106,7 +106,24 @@ plt.ylabel("Current (A)")
 plt.grid(True)
 ax.legend()
 plt.savefig("exp3_drainchars_n.pdf")
+plt.cla()
 
 # Plot both-types characteristics
-# TODO: Plot early voltages vs isat
-# TODO: Plot intrinsic gains vs isat
+# TODO: P-type
+ax.semilogx(isat_n, early_n, 'b.', label="N-type")
+plt.title("Early voltages and saturation currents")
+plt.xlabel("Saturation current (A)")
+plt.ylabel("Early voltage (v)")
+plt.grid(True)
+ax.legend()
+plt.savefig("exp3_early.pdf")
+plt.cla()
+
+ax.semilogx(isat_n, ig_n, 'b.', label="N-type")
+plt.title("Intrinsic gains and saturation currents")
+plt.xlabel("Saturation current (A)")
+plt.ylabel("Intrinsic gain")
+plt.grid(True)
+ax.legend()
+plt.savefig("exp3_ig.pdf")
+plt.cla()

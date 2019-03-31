@@ -34,8 +34,8 @@ def linterp(xs, ys, target):
     
 
 # for each curve:
-# Get saturation voltage
-# Make linear fit for sat region to find early voltage and isat
+# Get saturation voltage (and current)
+# Make linear fit for sat region to find early voltage
 # Make linear fit for ohmic region
 # combine slopes to get intrinsic gain
 
@@ -65,14 +65,20 @@ isat_n = [linterp(vd, i, vdsat) for vd, i, vdsat in zip(vd_n, i_n, vdsat_n)]
 print("Saturation currents:", isat_n)
 
 # Split the data into ohmic and saturation regions
-grouped = [ [list(g) for _, g in groupby(zip(vd, i), lambda pair: pair[0] >= vdsat)] for vd, i, vdsat in zip(vd_n, i_n, vdsat_n)]
-vg_on = [grouped[i][0] for i in range(3)]
-i_on = [grouped[i][0] for i in range(3)]
-vg_sn = [grouped[i][1] for i in range(3)]
-i_sn = [grouped[i][1] for i in range(3)]
+grouped = [[list(g) for _, g in groupby(zip(vd, i), lambda pair: pair[0] >= vdsat)] for vd, i, vdsat in zip(vd_n, i_n, vdsat_n)]
+vd_on = [[x[0] for x in y] for y in [grouped[i][0] for i in range(3)]]
+i_on = [[x[1] for x in y] for y in [grouped[i][0] for i in range(3)]]
+vd_sn = [[x[0] for x in y] for y in [grouped[i][1] for i in range(3)]]
+i_sn = [[x[1] for x in y] for y in [grouped[i][1] for i in range(3)]]
 
-# Linear fit the saturation region, to find Early voltage and sat current
+# Linear fit the saturation region, to find Early voltage
+early_n = []
+for vd, i in zip(vd_sn, i_sn):
+  fit = np.polyfit(vd, i, 1)
+  print(fit)
+  early_n += [(fit[1] / fit[0])]
 
+print("Early voltages:", early_n)
 
 # Plot n-type characteristics
 fig = plt.figure(figsize=(8,6))
@@ -88,3 +94,7 @@ plt.ylabel("Current (A)")
 plt.grid(True)
 ax.legend()
 plt.savefig("exp3_drainchars_n.pdf")
+
+# Plot both-types characteristics
+# TODO: Plot early voltages vs isat
+# TODO: Plot intrinsic gains vs isat
